@@ -8,13 +8,6 @@ build/
 *.log
 
 # Virtual environments
-venv/
+venvbackend/
 .env
 .env.*
-
-# IDEs
-.vscode/
-.idea/
-
-# Alembic
-alembic.ini
