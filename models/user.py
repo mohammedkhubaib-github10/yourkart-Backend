@@ -10,6 +10,7 @@ class User(Base):
     name = Column(String(20), nullable=False)
     email = Column(String(20))
     contact = Column(String(10))
+    location = Column(String(50))
 
     address = relationship('Address', secondary=address_table, back_populates='user', cascade="all, delete")
 
