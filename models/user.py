@@ -1,7 +1,7 @@
 from core.database import SessionLocal, Base, engine
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
-from address_table_secondary import address_table
+from address_user_link import address_table
 
 
 class User(Base):
@@ -27,21 +27,3 @@ class Address(Base):
 
 Base.metadata.create_all(engine)
 
-session = SessionLocal()
-user_data = User(
-    name='muaz',
-    email='muaz10@gmail.com',
-    contact='9400327485'
-)
-address1 = Address(
-    street='merit',
-    pincode='635810',
-    city='pernambut',
-    flat_no='32A',
-)
-
-
-result = session.query(User).filter(User.user_id == 2).first()
-if result:
-    session.delete(result)
-    session.commit()
