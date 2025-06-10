@@ -10,3 +10,5 @@ class User(TimeStampModel):
     name: str = Field(min_length=1)
     email: EmailStr
     contact: str = Field(min_length=10, max_length=10)
+    location: str = Field(min_length=1)
+    address: Address
