@@ -1,5 +1,7 @@
-from pydantic import Field, EmailStr
 from uuid import UUID
+
+from pydantic import Field, EmailStr
+
 from time_stamp import TimeStampModel
 
 

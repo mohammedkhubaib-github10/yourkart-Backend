@@ -1,7 +1,8 @@
-from time_stamp import TimeStampModel
 from uuid import UUID
+
 from pydantic import Field
-from typing import Optional
+
+from time_stamp import TimeStampModel
 
 
 class Product(TimeStampModel):

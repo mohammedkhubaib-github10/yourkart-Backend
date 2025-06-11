@@ -1,7 +1,9 @@
-from time_stamp import  TimeStampModel
 from uuid import UUID
-from enums import OrderStatus
+
 from pydantic import Field
+
+from enums import OrderStatus
+from time_stamp import TimeStampModel
 
 
 class Order(TimeStampModel):
