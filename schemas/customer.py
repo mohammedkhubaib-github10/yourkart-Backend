@@ -1,9 +1,10 @@
-from user import User
-from typing import List, Optional
-from cart import Cart
-from order import Order
+from time_stamp import TimeStampModel
+from uuid import UUID
+from pydantic import Field, EmailStr
 
 
-class Customer(User):
-    cart_items: Optional[List[Cart]]
-    orders: Optional[List[Order]]
+class Customer(TimeStampModel):
+    customer_id: UUID
+    customer_name: str = Field(min_length=1)
+    email: EmailStr
+    contact: str = Field(min_length=10, max_length=10)

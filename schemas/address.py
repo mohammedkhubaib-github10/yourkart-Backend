@@ -4,8 +4,9 @@ from uuid import  UUID
 
 class Address(BaseModel):
     address_id: UUID
+    location: str
     street: str
     pincode: str
     city: str
     flat_no: str
-    lives: UUID
+    vendor_id: UUID

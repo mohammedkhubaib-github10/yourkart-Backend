@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class TimeStampModel(BaseModel):
-    date_time: datetime
+    created_at: datetime
     model_config = ConfigDict(
         json_encoders={
             datetime: lambda v: v.strftime("%d-%m-%Y %H:%M:%S")

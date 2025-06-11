@@ -1,11 +1,11 @@
-from user import User
-from typing import List, Optional
-from product import Product
-from pydantic import Field
-from order import Order
+from pydantic import Field, EmailStr
+from uuid import UUID
+from time_stamp import TimeStampModel
 
 
-class Vendor(User):
-    store_name: str = Field(min_length=1)
-    inventory: Optional[List[Product]]
-    order_received: List[Order] = []
+class Vendor(TimeStampModel):
+    vendor_id: UUID
+    vendor_name: str = Field(min_length=1)
+    email: EmailStr
+    contact: str = Field(min_length=10, max_length=10)
+    brand_name: str = Field(min_length=1)

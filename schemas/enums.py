@@ -17,3 +17,6 @@ class OrderStatus(Enum):
     Delivered = "delivered"
 
 
+class PaymentStatus(str, Enum):
+    Success = "success"
+    Failed = "failed"

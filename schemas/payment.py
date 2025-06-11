@@ -1,10 +1,12 @@
 from pydantic import Field
 from time_stamp import TimeStampModel
 from uuid import UUID
+from enums import PaymentMode, PaymentStatus
 
 
 class Payment(TimeStampModel):
-    id: UUID
+    payment_id: UUID
     order_id: UUID
-    total_price: float = Field(ge=0)
-    payment_status: bool = False
+    payment_amount: float = Field(ge=0)
+    payment_status: PaymentStatus
+    payment_mode: PaymentMode
