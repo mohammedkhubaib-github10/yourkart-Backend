@@ -1,0 +1,18 @@
+from sqlalchemy import Column, String, Float, ForeignKey, DATETIME
+from sqlalchemy.orm import relationship
+
+from core.database import Base
+
+
+class Order(Base):
+    __tablename__ = 'Orders'
+    order_id = Column(String(36), primary_key=True)
+    total_price = Column(Float, nullable=False)
+    order_status = Column(String(20), nullable=False)
+    customer_id = Column(String(36), ForeignKey('Customers.customer_id'), nullable=False)
+    cart_id = Column(String(36), ForeignKey('Carts.cart_id'), nullable=False)
+    created_at = Column(DATETIME, nullable=False)
+
+    customer = relationship('Customer', back_populates='orders')
+    cart = relationship('Cart', back_populates='order', uselist=False)
+    payment = relationship('Payment', back_populates='order', uselist=False)

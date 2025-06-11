@@ -1,0 +1,17 @@
+from sqlalchemy import Column, String, Float, DATETIME, ForeignKey
+from sqlalchemy.orm import relationship
+
+from core.database import Base
+
+
+class Product(Base):
+    __tablename__ = 'Products'
+    product_id = Column(String(36), primary_key=True)
+    product_name = Column(String(20), nullable=False)
+    product_image = Column(String(20))
+    price = Column(Float, nullable=False)
+    vendor_id = Column(String(36), ForeignKey('Vendors.vendor_id'), nullable=False)
+    created_at = Column(DATETIME, nullable=False)
+
+    vendor = relationship('Vendor', back_populates='products')
+    cart_items = relationship('CartItem', back_populates='product', cascade='all, delete-orphan')
