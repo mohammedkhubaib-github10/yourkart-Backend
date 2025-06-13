@@ -1,9 +1,9 @@
-from sqlalchemy import Table, Column, Integer, ForeignKey
+from sqlalchemy import Table, Column, Integer, ForeignKey, String
 from core.database import Base
 
 address_table = Table(
     'user_address',
     Base.metadata,
-    Column('user_id', Integer, ForeignKey('Users.user_id')),
-    Column('address_id', Integer, ForeignKey('Addresses.address_id'))
+    Column('customer_id', String(36), ForeignKey('Customers.customer_id')),
+    Column('address_id', String(36), ForeignKey('Addresses.address_id'))
 )

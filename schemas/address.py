@@ -4,10 +4,12 @@ from pydantic import BaseModel
 
 
 class Address(BaseModel):
-    address_id: UUID
     location: str
     street: str
     pincode: str
     city: str
     flat_no: str
     vendor_id: UUID
+
+    class Config:
+        from_attributes = True

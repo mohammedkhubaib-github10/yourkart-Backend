@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import Column, String, Float, DATETIME, ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -6,7 +8,7 @@ from core.database import Base
 
 class Product(Base):
     __tablename__ = 'Products'
-    product_id = Column(String(36), primary_key=True)
+    product_id = Column(String(36), primary_key=True, default= lambda: str(uuid.uuid4()))
     product_name = Column(String(20), nullable=False)
     product_image = Column(String(20))
     price = Column(Float, nullable=False)

@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import Column, String, Float, ForeignKey, DATETIME
 from sqlalchemy.orm import relationship
 
@@ -6,7 +8,7 @@ from core.database import Base
 
 class Order(Base):
     __tablename__ = 'Orders'
-    order_id = Column(String(36), primary_key=True)
+    order_id = Column(String(36), primary_key=True, default= lambda: str(uuid.uuid4()))
     total_price = Column(Float, nullable=False)
     order_status = Column(String(20), nullable=False)
     customer_id = Column(String(36), ForeignKey('Customers.customer_id'), nullable=False)
