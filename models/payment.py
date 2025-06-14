@@ -8,7 +8,7 @@ from core.database import Base
 
 class Payment(Base):
     __tablename__ = 'Payments'
-    payment_id = Column(String(36), primary_key=True, default= lambda: str(uuid.uuid4()))
+    payment_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     payment_mode = Column(String(20), nullable=False)
     payment_amount = Column(Float, nullable=False)
     payment_status = Column(String(10), nullable=False)

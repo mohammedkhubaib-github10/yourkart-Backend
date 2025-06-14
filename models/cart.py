@@ -18,7 +18,7 @@ class Cart(Base):
 
 class CartItem(Base):
     __tablename__ = 'Cart_Items'
-    item_id = Column(String(36), primary_key=True, default= lambda: str(uuid.uuid4()))
+    item_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     qty = Column(Integer, nullable=False, default=1)
     total_price = Column(Float, nullable=False)
     cart_id = Column(String(36), ForeignKey('Carts.cart_id'), nullable=False)
@@ -26,4 +26,3 @@ class CartItem(Base):
 
     product = relationship('Product', back_populates='cart_items')
     cart = relationship('Cart', back_populates='items')
-
