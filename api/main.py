@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 import models
 from core.database import SessionLocal, engine
-from schemas import Customer, Vendor, VendorAddress, CustomerAddress, Product
+from schemas import Customer, Vendor, VendorAddress, CustomerAddress, Product, Cart, CartItems
 
 app = FastAPI()
 
@@ -237,3 +237,26 @@ def delete_product(product_id: str, vendor_id: str, db: Session = Depends(get_db
     db.commit()
     return 'successful'
 
+
+@app.post('/add_cart/{customer_id}')
+def add_cart(customer_id: str, db: Session = Depends(get_db)):
+    cart = models.Cart(customer_id=customer_id)
+    db.add(cart)
+    db.commit()
+    return cart
+
+
+@app.post('/add_items/{cart_id}/{product_id}')
+def add_items(cart_id: str, product_id: str, request: CartItems, db: Session = Depends(get_db)):
+    item_exists = db.query(models.CartItem).filter(models.CartItem.cart_id == cart_id,
+                                                   models.CartItem.product_id == product_id)
+    if item_exists:
+        raise HTTPException(status_code=400, detail="Already Added")
+    total_price = db.query(models.Product).filter(
+        models.Product.product_id == product_id).first().price * request.qty
+    item = models.CartItem(
+        qty=request.qty, cart_id=cart_id, product_id=product_id, total_price=total_price
+    )
+    db.add(item)
+    db.commit()
+    return item
