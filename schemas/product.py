@@ -6,7 +6,6 @@ from .time_stamp import TimeStampModel
 
 
 class Product(TimeStampModel):
-    vendor_id: UUID
     product_name: str = Field(min_length=1)
     price: float = Field(ge=0)
     product_image: str

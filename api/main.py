@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 import models
 from core.database import SessionLocal, engine
-from schemas import Customer, Vendor, VendorAddress, CustomerAddress
+from schemas import Customer, Vendor, VendorAddress, CustomerAddress, Product
 
 app = FastAPI()
 
@@ -61,14 +61,14 @@ def delete_customer(customer_id: str, db: Session = Depends(get_db)):
     customer_query = db.query(models.Customer).filter(models.Customer.customer_id == customer_id)
     if not customer_query.first():
         raise HTTPException(status_code=404, detail="Customer not found")
-    db.delete(customer_query)
+    db.delete(customer_query.first())
     db.commit()
     return 'successfull'
 
 
 @app.post('/new_vendor')
 def add_vendor(request: Vendor, db: Session = Depends(get_db)):
-    vendor_exists = db.query(models.Vendor).filter(request.email).first()
+    vendor_exists = db.query(models.Vendor).filter(models.Vendor.email == request.email).first()
     if vendor_exists:
         raise HTTPException(status_code=400, detail="Vendor already exists")
     vendor = models.Vendor(vendor_name=request.vendor_name, brand_name=request.brand_name,
@@ -108,12 +108,12 @@ def delete_vendor(vendor_id: str, db: Session = Depends(get_db)):
     vendor_query = db.query(models.Vendor).filter(models.Vendor.vendor_id == vendor_id)
     if not vendor_query.first():
         raise HTTPException(status_code=404, detail="Vendor not found")
-    db.delete(vendor_query)
+    db.delete(vendor_query.first())
     db.commit()
     return 'successfull'
 
 
-@app.post('/new_address/{vendor_id}')
+@app.post('/new_vendoraddress/{vendor_id}')
 def add_address(vendor_id: str, request: VendorAddress, db: Session = Depends(get_db)):
     address = models.VendorAddress(street=request.street, pincode=request.pincode,
                                    city=request.city, location=request.location,
@@ -124,13 +124,13 @@ def add_address(vendor_id: str, request: VendorAddress, db: Session = Depends(ge
     return address
 
 
-@app.get('/get_addresses/{vendor_id}')
+@app.get('/get_vendor_addresses/{vendor_id}')
 def get_address(vendor_id: str, db: Session = Depends(get_db)):
     address = db.query(models.VendorAddress).filter(models.VendorAddress.vendor_id == vendor_id).all()
     return address
 
 
-@app.put('/update_address/{vendor_id}/{address_id}')
+@app.put('/update_vendor_address/{vendor_id}/{address_id}')
 def update_address(vendor_id: str, address_id: str, request: VendorAddress, db: Session = Depends(get_db)):
     address_query = db.query(models.VendorAddress).filter(models.VendorAddress.address_id == address_id,
                                                           models.VendorAddress.vendor_id == vendor_id)
@@ -141,18 +141,18 @@ def update_address(vendor_id: str, address_id: str, request: VendorAddress, db: 
     return 'successfull'
 
 
-@app.delete('/delete_address/{vendor_id}/{address_id}')
+@app.delete('/delete_vendor_address/{vendor_id}/{address_id}')
 def delete_address(vendor_id: str, address_id: str, db: Session = Depends(get_db)):
     address_query = db.query(models.VendorAddress).filter(models.VendorAddress.address_id == address_id,
                                                           models.VendorAddress.vendor_id == vendor_id)
     if not address_query.first():
         raise HTTPException(status_code=404, detail="Address not found")
-    db.delete(address_query)
+    db.delete(address_query.first())
     db.commit()
     return 'Successful'
 
 
-@app.post('/new_address/{customer_id}')
+@app.post('/new_customer_address/{customer_id}')
 def add_address(customer_id: str, request: CustomerAddress, db: Session = Depends(get_db)):
     address = models.CustomerAddress(street=request.street, pincode=request.pincode,
                                      city=request.city, flat_no=request.flat_no, location=request.location,
@@ -163,13 +163,13 @@ def add_address(customer_id: str, request: CustomerAddress, db: Session = Depend
     return address
 
 
-@app.get('/get_addresses/{customer_id}')
+@app.get('/get_customer_addresses/{customer_id}')
 def get_address(customer_id: str, db: Session = Depends(get_db)):
     address = db.query(models.CustomerAddress).filter(models.CustomerAddress.customer_id == customer_id).all()
     return address
 
 
-@app.put('/update_address/{customer_id}/{address_id}')
+@app.put('/update_customer_address/{customer_id}/{address_id}')
 def update_address(customer_id: str, address_id: str, request: CustomerAddress, db: Session = Depends(get_db)):
     address_query = db.query(models.CustomerAddress).filter(models.CustomerAddress.address_id == address_id,
                                                             models.CustomerAddress.customer_id == customer_id)
@@ -180,12 +180,60 @@ def update_address(customer_id: str, address_id: str, request: CustomerAddress, 
     return 'successfull'
 
 
-@app.delete('/delete_address/{customer_id}/{address_id}')
+@app.delete('/delete_customer_address/{customer_id}/{address_id}')
 def delete_address(customer_id: str, address_id: str, db: Session = Depends(get_db)):
     address_query = db.query(models.CustomerAddress).filter(models.CustomerAddress.address_id == address_id,
                                                             models.CustomerAddress.customer_id == customer_id)
     if not address_query.first():
         raise HTTPException(status_code=404, detail="Address not found")
-    db.delete(address_query)
+    db.delete(address_query.first())
     db.commit()
     return 'Successful'
+
+
+@app.post('/add_product/{vendor_id}')
+def add_product(vendor_id: str, request: Product, db: Session = Depends(get_db)):
+    product = models.Product(product_name=request.product_name, product_image=request.product_image,
+                             price=request.price, vendor_id=vendor_id, created_at=request.created_at)
+    db.add(product)
+    db.commit()
+    return product
+
+
+@app.get('/get_product/{vendor_id}')
+def get_product(vendor_id: str, db: Session = Depends(get_db)):
+    products = db.query(models.Product).filter(models.Product.vendor_id == vendor_id).all()
+    if not products:
+        raise HTTPException(status_code=404, detail="No Products from this vendor")
+    return products
+
+
+@app.get('/get_all_product')
+def get_all_product(db: Session = Depends(get_db)):
+    products = db.query(models.Product).all()
+    if not products:
+        raise HTTPException(status_code=404, detail="No Products available")
+    return products
+
+
+@app.put('/update_product/{product_id}/{vendor_id}')
+def update_product(product_id: str, vendor_id: str, request: Product, db: Session = Depends(get_db)):
+    product = db.query(models.Product).filter(models.Product.product_id == product_id,
+                                              models.Product.vendor_id == vendor_id)
+    if not product.first():
+        raise HTTPException(status_code=404, detail="No such Product")
+    product.update(request.model_dump())
+    db.commit()
+    return 'successful'
+
+
+@app.delete('/delete_product/{product_id}/{vendor_id}')
+def delete_product(product_id: str, vendor_id: str, db: Session = Depends(get_db)):
+    product = db.query(models.Product).filter(models.Product.product_id == product_id,
+                                              models.Product.vendor_id == vendor_id)
+    if not product.first():
+        raise HTTPException(status_code=404, detail="No such Product")
+    db.delete(product.first())
+    db.commit()
+    return 'successful'
+
