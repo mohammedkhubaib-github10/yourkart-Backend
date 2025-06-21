@@ -7,9 +7,6 @@ from .time_stamp import TimeStampModel
 
 
 class Order(TimeStampModel):
-    cart_id: UUID
-    customer_id: UUID
-    total_price: float = Field(ge=0)
     order_status: OrderStatus
 
     class Config:
