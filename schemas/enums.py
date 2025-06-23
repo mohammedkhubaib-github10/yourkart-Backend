@@ -10,7 +10,7 @@ class PaymentMode(str, Enum):
 
 
 class OrderStatus(Enum):
-    Pending = "pending"
+    Failed = "failed"
     Placed = "placed"
     Cancelled = "cancelled"
     Shipped = "shipped"

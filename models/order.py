@@ -11,10 +11,13 @@ class Order(Base):
     order_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     total_price = Column(Float, nullable=False)
     order_status = Column(String(20), nullable=False)
+    delivery_address_id = Column(String(36), ForeignKey("Customer_Addresses.address_id", ondelete="CASCADE"),
+                                 nullable=False)
     customer_id = Column(String(36), ForeignKey('Customers.customer_id'), nullable=False)
     cart_id = Column(String(36), ForeignKey('Carts.cart_id'), nullable=False)
     created_at = Column(DATETIME, nullable=False)
 
+    delivery_address = relationship("CustomerAddress")
     customer = relationship('Customer', back_populates='orders')
     cart = relationship('Cart', back_populates='order', uselist=False)
     payment = relationship('Payment', back_populates='order', uselist=False)

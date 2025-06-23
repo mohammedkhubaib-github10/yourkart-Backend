@@ -308,6 +308,9 @@ def update_cart_amount(cart_id: str, item_price: float, db: Session, add: bool):
 @app.post('/add_items/{cart_id}/{product_id}')
 def add_items(cart_id: str, product_id: str, db: Session = Depends(get_db)):
     cart = db.query(models.Cart).filter(models.Cart.cart_id == cart_id).first()
+    existing_items = db.query(models.CartItem, models.Product).join(models.Product,
+                                                models.CartItem.product_id == models.Product.product_id).filter(
+        models.CartItem.cart_id == cart_id).first()
     if not cart:
         raise HTTPException(status_code=404, detail="Cart doesn't Exist")
 
@@ -316,6 +319,10 @@ def add_items(cart_id: str, product_id: str, db: Session = Depends(get_db)):
     item = item_query.first()
     product_query = db.query(models.Product).filter(models.Product.product_id == product_id)
     product = product_query.first()
+    if existing_items:
+        if existing_items.Product.vendor_id != product.vendor_id:
+            raise HTTPException(status_code=400, detail="Cannot add products of a different vendor")
+
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
@@ -365,7 +372,8 @@ def place_order(cart_id: str, request: schemas.Order, db: Session = Depends(get_
         raise HTTPException(status_code=404, detail="Empty Cart")
 
     order = models.Order(total_price=cart.amount, customer_id=cart.customer_id, cart_id=cart.cart_id,
-                         order_status=request.order_status, created_at=request.created_at)
+                         order_status=request.order_status, delivery_address_id=request.delivery_address_id,
+                         created_at=request.created_at)
     db.add(order)
     db.commit()
     db.refresh(order)
@@ -420,3 +428,47 @@ def get_customer_orders(customer_id: str, db: Session = Depends(get_db)):
 
     return result
 
+
+@app.get('/get_vendor_orders/{vendor_id}')
+def get_vendor_orders(vendor_id: str, db: Session = Depends(get_db)):
+    results = (
+        db.query(
+            models.Order.order_id,
+            models.Order.total_price,
+            models.Order.created_at,
+            models.Customer.customer_name,
+            models.Customer.contact,
+            models.CustomerAddress.street,
+            models.CustomerAddress.city,
+            models.CustomerAddress.pincode,
+            models.CustomerAddress.flat_no,
+            models.Product.product_name,
+            models.OrderItem.qty,
+            models.OrderItem.total_price
+        )
+        .join(models.OrderItem, models.Order.order_id == models.OrderItem.order_id)
+        .join(models.Product, models.OrderItem.product_id == models.Product.product_id)
+        .join(models.Customer, models.Order.customer_id == models.Customer.customer_id)
+        .join(models.CustomerAddress, models.Order.delivery_address_id == models.CustomerAddress.address_id)
+        .filter(models.Product.vendor_id == vendor_id, models.Order.order_status == "OrderStatus.Placed")
+        .all()
+    )
+    response = []
+    for row in results:
+        response.append({
+            "order_id": row[0],
+            "total_price": row[1],
+            "created_at": row[2],
+            "customer_name": row[3],
+            "customer_contact": row[4],
+            "customer_street": row[5],
+            "customer_city": row[6],
+            "customer_pincode": row[7],
+            "customer_flat_no": row[8],
+            "product_name": row[9],
+            "qty": row[10],
+            "item_total_price": row[11]
+        })
+        if not response:
+            raise HTTPException(status_code=400, detail="No Orders Found")
+    return response
