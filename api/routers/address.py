@@ -7,10 +7,12 @@ from core.database import get_db
 
 router = APIRouter()
 
+
 @router.post('/new_vendor_address/{vendor_id}')
 def add_address(vendor_id: str, request: schemas.VendorAddress, db: Session = Depends(get_db)):
     address = models.VendorAddress(street=request.street, pincode=request.pincode,
-                                   city=request.city, location=request.location,
+                                   city=request.city, latitude=request.latitude,
+                                   longitude=request.longitude,
                                    vendor_id=vendor_id)
     db.add(address)
     db.commit()
@@ -52,7 +54,8 @@ def delete_address(vendor_id: str, address_id: str, db: Session = Depends(get_db
 @router.post('/new_customer_address/{customer_id}')
 def add_address(customer_id: str, request: schemas.CustomerAddress, db: Session = Depends(get_db)):
     address = models.CustomerAddress(street=request.street, pincode=request.pincode,
-                                     city=request.city, flat_no=request.flat_no, location=request.location,
+                                     city=request.city, flat_no=request.flat_no, latitude=request.latitude,
+                                     longitude=request.longitude,
                                      customer_id=customer_id)
     db.add(address)
     db.commit()
