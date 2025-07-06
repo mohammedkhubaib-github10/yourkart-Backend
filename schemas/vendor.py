@@ -1,12 +1,9 @@
-from pydantic import Field, EmailStr
-
-from .time_stamp import TimeStampModel
+from pydantic import Field, EmailStr, BaseModel
 
 
-class Vendor(TimeStampModel):
+class Vendor(BaseModel):
     vendor_name: str = Field(min_length=1)
     email: EmailStr
-    contact: str = Field(min_length=10, max_length=10)
     brand_name: str = Field(min_length=1)
 
     class Config:

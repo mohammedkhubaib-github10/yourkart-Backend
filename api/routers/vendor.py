@@ -1,20 +1,37 @@
+import random
+
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
-
+from datetime import datetime
 import models
 import schemas
 from core.database import get_db
+from services.helper import save_otp, send_sms, verify
 
 router = APIRouter()
 
 
-@router.post('/new_vendor')
-def add_vendor(request: schemas.Vendor, db: Session = Depends(get_db)):
-    vendor_exists = db.query(models.Vendor).filter(models.Vendor.email == request.email).first()
-    if vendor_exists:
-        raise HTTPException(status_code=400, detail="Vendor already exists")
-    vendor = models.Vendor(vendor_name=request.vendor_name, brand_name=request.brand_name,
-                           email=request.email, contact=request.contact, created_at=request.created_at)
+@router.post('/request_otp')
+def request_otp(contact: str):
+    otp = str(random.randint(10000, 99999))
+    save_otp(contact, otp)
+    send_sms(contact, otp)
+    return "OTP Sent Successfully " + otp
+
+
+@router.post('/verify_otp')
+def verify_otp(contact: str, customer_otp: str, db: Session = Depends(get_db)):
+    result = verify(contact, customer_otp)
+    if not result:
+        raise HTTPException(detail="Invalid OTP or Time out", status_code=404)
+    vendor = db.query(models.Vendor).filter(models.Vendor.contact == contact).first()
+    if not vendor:
+        add_vendor(contact, db)
+    return "logged in Successfully"
+
+
+def add_vendor(contact: str, db: Session):
+    vendor = models.Vendor(contact=contact, created_at=datetime.utcnow())
     db.add(vendor)
     db.commit()
     db.refresh(vendor)

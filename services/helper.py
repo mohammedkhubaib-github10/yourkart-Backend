@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from math import radians, sin, cos, sqrt, asin
 
 from sqlalchemy.orm import Session
@@ -30,3 +31,26 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * asin(sqrt(a))
 
     return R * c  # distance in km
+
+
+otp_store = {}
+
+
+def save_otp(contact: str, otp: str):
+    otp_store[contact] = {"otp": otp, "expires_at": datetime.utcnow() + timedelta(minutes=5)}
+
+
+def send_sms(contact: str, otp: str):
+    pass
+
+
+def verify(contact: str, customer_otp: str):
+    if not otp_store.get(contact):
+        return False
+    if datetime.utcnow() > otp_store.get(contact)["expires_at"]:
+        del otp_store[contact]
+        return False
+    if customer_otp == otp_store.get(contact)["otp"]:
+        del otp_store[contact]
+        return True
+    return False

@@ -9,9 +9,9 @@ from core.database import Base
 class Customer(Base):
     __tablename__ = 'Customers'
     customer_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    customer_name = Column(String(100), nullable=False)
+    customer_name = Column(String(100), )
     email = Column(String(100), unique=True)
-    contact = Column(String(10))
+    contact = Column(String(10), unique=True, nullable=False)
     created_at = Column(DATETIME, nullable=False)
 
     addresses = relationship('CustomerAddress', back_populates='customer', cascade='all, delete-orphan')
@@ -22,10 +22,10 @@ class Customer(Base):
 class Vendor(Base):
     __tablename__ = 'Vendors'
     vendor_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    vendor_name = Column(String(100), nullable=False)
-    brand_name = Column(String(100), unique=True, nullable=False)
+    vendor_name = Column(String(100))
+    brand_name = Column(String(100), unique=True)
     email = Column(String(100), unique=True)
-    contact = Column(String(10))
+    contact = Column(String(10), unique=True)
     created_at = Column(DATETIME, nullable=False)
 
     shop_addresses = relationship('VendorAddress', back_populates='vendor', cascade='all, delete-orphan')

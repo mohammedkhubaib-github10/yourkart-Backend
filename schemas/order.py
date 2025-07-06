@@ -1,12 +1,11 @@
-from uuid import UUID
+from pydantic import BaseModel
 
-from pydantic import Field
+from pydantic import BaseModel
 
-from .enums import OrderStatus, PaymentMode
-from .time_stamp import TimeStampModel
+from .enums import PaymentMode
 
 
-class Order(TimeStampModel):
+class Order(BaseModel):
     payment_mode: PaymentMode
     delivery_address_id: str
 
