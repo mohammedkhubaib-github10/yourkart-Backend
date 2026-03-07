@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Depends, APIRouter
 
 from controller import schema
-from controller.dependency.customer_dependencey import get_customer_service
+from controller.dependency.customer_dependency import get_customer_service
 from domain.exception.auth_exception import InvalidOTP
 from domain.exception.customer_exception import CustomerNotFound
 

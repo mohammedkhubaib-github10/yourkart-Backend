@@ -1,75 +1,59 @@
-import random
-
 from fastapi import Depends, HTTPException, APIRouter
-from sqlalchemy.orm import Session
-from datetime import datetime
-from infrastructure import model
+
 from controller import schema
-from infrastructure.database.session import get_db
-from service.helper import save_otp, send_sms, verify
+from controller.dependency.vendor_dependency import get_vendor_service
+from domain.exception import InvalidOTP, VendorNotFound
 
 router = APIRouter()
 
 
 @router.post('/request_otp')
-def request_otp(contact: str):
-    otp = str(random.randint(10000, 99999))
-    save_otp(contact, otp)
-    send_sms(contact, otp)
-    return "OTP Sent Successfully " + otp
+def request_otp(contact: str, service=Depends(get_vendor_service)):
+    otp = service.request_otp(contact)
+    return "OTP Sent Successfully " + otp  # remove it after testing
 
 
 @router.post('/verify_otp')
-def verify_otp(contact: str, customer_otp: str, db: Session = Depends(get_db)):
-    result = verify(contact, customer_otp)
-    if not result:
-        raise HTTPException(detail="Invalid OTP or Time out", status_code=404)
-    vendor = db.query(model.Vendor).filter(model.Vendor.contact == contact).first()
-    if not vendor:
-        add_vendor(contact, db)
-    return "logged in Successfully"
+def verify_otp(contact: str, vendor_otp: str, service=Depends(get_vendor_service)):
+    try:
+        vendor = service.verify_otp(contact, vendor_otp)
+        return f'logged in Successfully, {vendor.vendor_id}'
 
-
-def add_vendor(contact: str, db: Session):
-    vendor = model.Vendor(contact=contact, created_at=datetime.utcnow())
-    db.add(vendor)
-    db.commit()
-    db.refresh(vendor)
-    return vendor
+    except InvalidOTP as e:
+        raise HTTPException(detail=str(e), status_code=404)
 
 
 @router.get('/get_vendor/{vendor_id}')
-def get_vendor(vendor_id: str, db: Session = Depends(get_db)):
-    vendor = db.query(model.Vendor).filter(model.Vendor.vendor_id == vendor_id).first()
-    if not vendor:
-        raise HTTPException(status_code=404, detail="Vendor not found")
-    return vendor
+def get_vendor(vendor_id: str, service=Depends(get_vendor_service)):
+    try:
+        vendor = service.get_vendor_by_id(vendor_id)
+        return vendor
+
+    except VendorNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.get('/all_vendors')
-def get_all_vendors(db: Session = Depends(get_db)):
-    vendors = db.query(model.Vendor).all()
+def get_all_vendors(service=Depends(get_vendor_service)):
+    vendors = service.get_all_vendors()
     return vendors
 
 
 @router.put('/update_vendor/{vendor_id}')
-def update_vendor(vendor_id: str, request: schema.Vendor, db: Session = Depends(get_db)):
-    vendor_query = db.query(model.Vendor).filter(model.Vendor.vendor_id == vendor_id)
-    vendor = vendor_query.first()
-    if not vendor:
-        raise HTTPException(status_code=404, detail="Vendor not found")
-    vendor_query.update(request.model_dump())
-    db.commit()
-    db.refresh(vendor)
-    return vendor
+def update_vendor(vendor_id: str, request: schema.Vendor, service=Depends(get_vendor_service)):
+    try:
+        updated_vendor = service.update_vendor(vendor_id, request.model_dump())
+        return updated_vendor
+
+    except VendorNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.delete('/delete_vendor/{vendor_id}')
-def delete_vendor(vendor_id: str, db: Session = Depends(get_db)):
-    vendor_query = db.query(model.Vendor).filter(model.Vendor.vendor_id == vendor_id)
-    vendor = vendor_query.first()
-    if not vendor:
-        raise HTTPException(status_code=404, detail="Vendor not found")
-    db.delete(vendor)
-    db.commit()
-    return 'successfully deleted'
+def delete_vendor(vendor_id: str, service=Depends(get_vendor_service)):
+    try:
+        service.delete_vendor(vendor_id)
+        return 'successfully deleted'
+
+    except VendorNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
