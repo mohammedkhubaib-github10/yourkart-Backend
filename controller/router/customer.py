@@ -18,7 +18,7 @@ def request_otp(contact: str, service=Depends(get_customer_service)):
 def verify_otp(contact: str, customer_otp: str, service=Depends(get_customer_service)):
     try:
         customer = service.verify_otp(contact, customer_otp)
-        return f'logged in Successfully, {customer}'
+        return f'logged in Successfully, {customer.customer_id}'
 
     except InvalidOTP as e:
         raise HTTPException(detail=str(e), status_code=404)

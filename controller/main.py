@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
 from controller.router import customer, vendor, address, cart, order, product
-from infrastructure.database.session import engine
 from infrastructure.database.session import Base
+from infrastructure.database.session import engine
 
 app = FastAPI()
 

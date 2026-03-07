@@ -23,7 +23,7 @@ class CustomerService:
             raise AuthException.InvalidOTP()
 
         try:
-            customer = self.repo.get_customer_by_contact(contact)
+            customer = self.get_customer_by_contact(contact)
             return customer
         except CustomerException.CustomerNotFound:
             customer = self.repo.create_customer(contact)
