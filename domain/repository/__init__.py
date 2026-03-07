@@ -1,1 +1,1 @@
-from .CustomerRepo import CustomerRepo
+from .customer_repo import CustomerRepo

@@ -1,1 +1,1 @@
-from .DomainException import DomainException
+from .domain_exception import DomainException

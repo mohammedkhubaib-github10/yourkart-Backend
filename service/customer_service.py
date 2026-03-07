@@ -1,6 +1,6 @@
 import random
 
-from domain.exception import AuthException, CustomerException
+from domain.exception import auth_exception, customer_exception
 from domain.repository import CustomerRepo
 from .helper import send_sms, save_otp, verify
 

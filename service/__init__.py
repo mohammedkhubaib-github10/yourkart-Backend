@@ -1,1 +1,1 @@
-from .CustomerService import CustomerService
+from .customer_service import CustomerService

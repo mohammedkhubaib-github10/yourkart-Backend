@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Depends, APIRouter
 
 from controller import schema
-from controller.dependency.CustomerDependency import get_customer_service
-from domain.exception.AuthException import InvalidOTP
-from domain.exception.CustomerException import CustomerNotFound
+from controller.dependency.customer_dependencey import get_customer_service
+from domain.exception.auth_exception import InvalidOTP
+from domain.exception.customer_exception import CustomerNotFound
 
 router = APIRouter()
 
