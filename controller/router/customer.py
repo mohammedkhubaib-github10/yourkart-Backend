@@ -43,7 +43,7 @@ def get_all_customers(service=Depends(get_customer_service)):
 @router.put('/update_customer/{customer_id}')
 def update_customer(customer_id: str, request: schema.Customer, service=Depends(get_customer_service)):
     try:
-        updated_customer = service.update_customer(customer_id, request.model_dump())
+        updated_customer = service.update_customer(customer_id, request)
         return updated_customer
 
     except CustomerNotFound as e:

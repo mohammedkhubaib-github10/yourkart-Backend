@@ -27,9 +27,12 @@ class VendorRepoImpl(VendorRepo):
         vendors = self.db.query(model.Vendor).all()
         return vendors
 
+    def get_nearby_vendors(self, address_id):
+        pass
+
     def update_vendor(self, vendor_id, request):
         vendor_query = self.db.query(model.Vendor).filter(model.Vendor.vendor_id == vendor_id)
-        vendor_query.update(request)
+        vendor_query.update(request.model_dump())
         self.db.commit()
         return vendor_query.first()
 

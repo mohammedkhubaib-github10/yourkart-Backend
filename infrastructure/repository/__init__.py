@@ -1,2 +1,3 @@
 from .customer_repo_impl import CustomerRepoImpl
 from .vendor_repo_impl import VendorRepoImpl
+from .product_repo_impl import ProductRepoImpl

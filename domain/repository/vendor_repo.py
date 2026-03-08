@@ -20,6 +20,10 @@ class VendorRepo(ABC):
         pass
 
     @abstractmethod
+    def get_nearby_vendors(self, address_id):
+        pass
+
+    @abstractmethod
     def update_vendor(self, vendor_id, request):
         pass
 

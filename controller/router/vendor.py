@@ -42,7 +42,7 @@ def get_all_vendors(service=Depends(get_vendor_service)):
 @router.put('/update_vendor/{vendor_id}')
 def update_vendor(vendor_id: str, request: schema.Vendor, service=Depends(get_vendor_service)):
     try:
-        updated_vendor = service.update_vendor(vendor_id, request.model_dump())
+        updated_vendor = service.update_vendor(vendor_id, request)
         return updated_vendor
 
     except VendorNotFound as e:

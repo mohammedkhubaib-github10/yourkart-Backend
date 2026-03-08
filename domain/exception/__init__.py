@@ -5,3 +5,4 @@ from .customer_exception import CustomerNotFound
 from .customer_exception import CustomerAlreadyExists
 from .vendor_exception import VendorAlreadyExists
 from .vendor_exception import VendorNotFound
+from .product_exception import ProductNotFound

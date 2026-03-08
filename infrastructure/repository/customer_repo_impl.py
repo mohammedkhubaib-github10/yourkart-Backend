@@ -29,7 +29,7 @@ class CustomerRepoImpl(CustomerRepo):
 
     def update_customer(self, customer_id, request):
         customer_query = self.db.query(model.Customer).filter(model.Customer.customer_id == customer_id)
-        customer_query.update(request)
+        customer_query.update(request.model_dump())
         self.db.commit()
         return customer_query.first()
 
