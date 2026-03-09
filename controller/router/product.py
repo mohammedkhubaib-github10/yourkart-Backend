@@ -13,8 +13,8 @@ def add_product(vendor_id: str, request: schema.Product, service=Depends(get_pro
     return product
 
 
-@router.get('/get_product/{vendor_id}')
-def get_product(vendor_id: str, service=Depends(get_product_service)):
+@router.get('/get_products/{vendor_id}')
+def get_products(vendor_id: str, service=Depends(get_product_service)):
     try:
         products = service.get_products(vendor_id)
         return products
@@ -23,8 +23,8 @@ def get_product(vendor_id: str, service=Depends(get_product_service)):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.get('/get_all_product')
-def get_all_product(service=Depends(get_product_service)):
+@router.get('/get_all_products')
+def get_all_products(service=Depends(get_product_service)):
     try:
         products = service.get_all_products()
         return products

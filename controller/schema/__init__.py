@@ -1,4 +1,5 @@
-from .address import VendorAddress, CustomerAddress
+from .customer_address import CustomerAddress
+from .vendor_address import VendorAddress
 from .cart import Cart
 from .cart_items import CartItems
 from .customer import Customer

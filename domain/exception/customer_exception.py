@@ -1,4 +1,4 @@
-from . import DomainException
+from domain.exception.domain_exception import DomainException
 
 
 class CustomerNotFound(DomainException):
