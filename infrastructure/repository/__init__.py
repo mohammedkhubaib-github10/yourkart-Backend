@@ -3,3 +3,4 @@ from .vendor_repo_impl import VendorRepoImpl
 from .product_repo_impl import ProductRepoImpl
 from .customer_address_repo_impl import CustomerAddressRepoImpl
 from .vendor_address_repo_impl import VendorAddressRepoImpl
+from .cart_repo_impl import CartRepoImpl

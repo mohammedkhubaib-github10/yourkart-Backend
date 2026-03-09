@@ -7,3 +7,6 @@ from .product_exception import ProductNotFound
 from .vendor_address_exception import VendorAddressNotFound
 from .vendor_exception import VendorAlreadyExists
 from .vendor_exception import VendorNotFound
+from .cart_exception import CartAlreadyExists
+from .cart_exception import CartNotFound
+from .cart_exception import CartItemsNotFound

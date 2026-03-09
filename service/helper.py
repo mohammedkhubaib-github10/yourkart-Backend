@@ -6,15 +6,6 @@ from sqlalchemy.orm import Session
 from infrastructure import model
 
 
-def update_cart_amount(cart_id: str, item_price: float, db: Session, add: bool):
-    cart = db.query(model.Cart).filter(model.Cart.cart_id == cart_id).first()
-    if cart:
-        if add:
-            cart.amount += item_price
-        else:
-            cart.amount = max(0, cart.amount - item_price)
-
-        db.commit()
 
 
 def haversine(lat1, lon1, lat2, lon2):
