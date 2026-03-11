@@ -48,7 +48,61 @@ class OrderRepoImpl(OrderRepo):
         return result
 
     def view_vendor_orders(self, vendor_id):
-        pass
+        orders = (
+            self.db.query(
+                model.Order.order_id,
+                model.Order.total_price,
+                model.Order.payment_mode,
+                model.Order.created_at,
+                model.Order.order_status,
+                model.Customer.customer_name,
+                model.Customer.contact,
+                model.CustomerAddress.street,
+                model.CustomerAddress.city,
+                model.CustomerAddress.pincode,
+                model.CustomerAddress.flat_no,
+            )
+            .join(model.OrderItem, model.OrderItem.order_id == model.Order.order_id)
+            .join(model.Product, model.OrderItem.product_id == model.Product.product_id)
+            .join(model.Customer, model.Order.customer_id == model.Customer.customer_id)
+            .join(model.CustomerAddress, model.Order.delivery_address_id == model.CustomerAddress.address_id)
+            .filter(model.Product.vendor_id == vendor_id)
+            .distinct()
+            .all()
+        )
+        result = []
+        for order in orders:
+            items = self.db.query(model.Product, model.OrderItem) \
+                .join(model.Product, model.OrderItem.product_id == model.Product.product_id) \
+                .filter(model.OrderItem.order_id == order.order_id) \
+                .all()
+            result.append({
+                "order_id": order.order_id,
+                "customer_name": order.customer_name,
+                "customer_contact": order.contact,
+                "total_price": order.total_price,
+                "status": order.order_status,
+                "payment": order.payment_mode,
+                "created_at": order.created_at,
+                "items": [
+                    {
+                        "product_id": product.product_id,
+                        "product_name": product.product_name,
+                        "qty": order_item.qty,
+                        "total_price": order_item.total_price
+                    } for product, order_item in items
+                ],
+                "address": [
+                    {
+                        "flat_no": order.flat_no,
+                        "street": order.street,
+                        "city": order.city,
+                        "pincode": order.pincode,
+                    }
+                ]
+            })
+
+        return result
 
     def confirm_order(self, cart, order):
         self.db.commit()

@@ -33,7 +33,10 @@ class OrderService:
         return orders
 
     def view_vendor_orders(self, vendor_id):
-        pass
+        orders = self.repo.view_vendor_orders(vendor_id)
+        if not orders:
+            raise OrderNotFound()
+        return orders
 
     def confirm_order(self, cart, order):
         return self.repo.confirm_order(cart, order)
