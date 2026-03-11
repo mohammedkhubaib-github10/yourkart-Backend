@@ -1,4 +1,4 @@
-from domain.exception import CartNotFound, CartItemsNotFound, PaymentFailure
+from domain.exception import CartNotFound, CartItemsNotFound, PaymentFailure, OrderNotFound
 from domain.repository import OrderRepo, CartRepo
 from infrastructure.enums.enums import PaymentMode
 from service.payment_service import PaymentService
@@ -27,7 +27,10 @@ class OrderService:
             raise PaymentFailure()
 
     def view_customer_orders(self, customer_id):
-        pass
+        orders = self.repo.view_customer_orders(customer_id)
+        if not orders:
+            raise OrderNotFound()
+        return orders
 
     def view_vendor_orders(self, vendor_id):
         pass

@@ -14,7 +14,6 @@ class OrderRepo(ABC):
     def view_vendor_orders(self, vendor_id):
         pass
 
-
     @abstractmethod
     def confirm_order(self, cart, order):
         pass

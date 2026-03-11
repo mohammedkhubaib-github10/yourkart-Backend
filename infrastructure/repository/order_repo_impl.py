@@ -20,7 +20,32 @@ class OrderRepoImpl(OrderRepo):
         return order
 
     def view_customer_orders(self, customer_id):
-        pass
+        orders = self.db.query(model.Order).filter(model.Order.customer_id == customer_id).all()
+        if not orders:
+            return
+        result = []
+        for order in orders:
+            items = self.db.query(model.Product, model.OrderItem) \
+                .join(model.Product, model.OrderItem.product_id == model.Product.product_id) \
+                .filter(model.OrderItem.order_id == order.order_id) \
+                .all()
+            result.append({
+                "order_id": order.order_id,
+                "total_price": order.total_price,
+                "status": order.order_status,
+                "payment": order.payment_mode,
+                "created_at": order.created_at,
+                "items": [
+                    {
+                        "product_id": product.product_id,
+                        "product_name": product.product_name,
+                        "qty": order_item.qty,
+                        "total_price": order_item.total_price
+                    } for product, order_item in items
+                ]
+            })
+
+        return result
 
     def view_vendor_orders(self, vendor_id):
         pass

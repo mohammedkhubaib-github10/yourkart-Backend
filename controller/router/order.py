@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, APIRouter
 
 from controller import schema
 from controller.dependency.order_dependency import get_order_service
-from domain.exception import PaymentFailure, CartItemsNotFound
+from domain.exception import PaymentFailure, CartItemsNotFound, OrderNotFound
 
 router = APIRouter()
 
@@ -15,38 +15,18 @@ def place_order(customer_id: str, request: schema.Order, service=Depends(get_ord
     except PaymentFailure as e:
         raise HTTPException(status_code=500, detail=str(e))
     except CartItemsNotFound as e:
-        raise  HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
 
-#
-# @router.get('/get_customer_orders/{customer_id}')
-# def get_customer_orders(customer_id: str, db: Session = Depends(get_db)):
-#     orders = db.query(model.Order).filter(model.Order.customer_id == customer_id).all()
-#     if not orders:
-#         raise HTTPException(status_code=404, detail="No Orders Found")
-#
-#     result = []
-#     for order in orders:
-#         items = db.query(model.OrderItem).filter(model.OrderItem.order_id == order.order_id).all()
-#         result.append({
-#             "order_id": order.order_id,
-#             "total_price": order.total_price,
-#             "status": order.order_status,
-#             "payment": order.payment_mode,
-#             "created_at": order.created_at,
-#             "items": [
-#                 {
-#                     "product_id": item.product_id,
-#                     "product_name": db.query(model.Product).filter(
-#                         model.Product.product_id == item.product_id).first().product_name,
-#                     "qty": item.qty,
-#                     "total_price": item.total_price
-#                 } for item in items
-#             ]
-#         })
-#
-#     return result
-#
-#
+
+@router.get('/get_customer_orders/{customer_id}')
+def view_customer_orders(customer_id: str, service=Depends(get_order_service)):
+    try:
+        orders = service.view_customer_orders(customer_id)
+        return orders
+    except OrderNotFound as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 # @router.get('/get_vendor_orders/{vendor_id}')
 # def get_vendor_orders(vendor_id: str, db: Session = Depends(get_db)):
 #     results = (
