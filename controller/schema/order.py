@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from controller.enums.enums import PaymentMode
+from infrastructure.enums import PaymentMode
 
 
 class Order(BaseModel):

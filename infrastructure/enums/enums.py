@@ -15,6 +15,7 @@ class OrderStatus(Enum):
     Cancelled = "cancelled"
     Shipped = "shipped"
     Delivered = "delivered"
+    Pending = "pending"
 
 
 class PaymentStatus(str, Enum):

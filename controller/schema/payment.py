@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import Field, BaseModel
 
-from controller.enums.enums import PaymentMode, PaymentStatus
+from infrastructure.enums import PaymentMode, PaymentStatus
 
 
 class Payment(BaseModel):

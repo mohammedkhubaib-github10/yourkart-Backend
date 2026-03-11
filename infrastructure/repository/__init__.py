@@ -4,3 +4,5 @@ from .product_repo_impl import ProductRepoImpl
 from .customer_address_repo_impl import CustomerAddressRepoImpl
 from .vendor_address_repo_impl import VendorAddressRepoImpl
 from .cart_repo_impl import CartRepoImpl
+from .order_repo_impl import OrderRepoImpl
+from .payment_repo_impl import PaymentRepoImpl

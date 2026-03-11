@@ -13,4 +13,4 @@ class CartAlreadyExists(DomainException):
 
 class CartItemsNotFound(DomainException):
     def __init__(self):
-        super().__init__(f"Cart Items does not Exist")
+        super().__init__(f"Empty Cart, Cart Items does not Exist")
