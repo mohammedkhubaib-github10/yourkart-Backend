@@ -24,10 +24,10 @@ class VendorService:
 
         try:
             vendor = self.get_vendor_by_contact(contact)
-            return vendor
+            return vendor.vendor_id
         except VendorNotFound:
             vendor = self.repo.create_vendor(contact)
-            return vendor
+            return vendor.vendor_id
 
     def get_vendor_by_id(self, vendor_id):
         vendor = self.repo.get_vendor_by_id(vendor_id)

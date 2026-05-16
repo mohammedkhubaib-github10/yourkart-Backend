@@ -72,8 +72,13 @@ class CartRepoImpl(CartRepo):
             })
         return result
 
-    def delete_cart_items(self, item_id):
+    def delete_cart_items(self, customer_id, item_id):
         item = self.db.query(model.CartItem).filter(model.CartItem.item_id == item_id).first()
+        cart_id = item.cart_id
+        c_id = self.db.query(model.Cart).filter(model.Cart.customer_id == customer_id,
+                                                model.Cart.cart_id == cart_id).first()
+        if not c_id:
+            return
         if not item:
             return
         product_price = item.total_price / item.qty

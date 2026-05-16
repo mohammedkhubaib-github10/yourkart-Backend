@@ -19,5 +19,5 @@ class CartRepo(ABC):
         pass
 
     @abstractmethod
-    def delete_cart_items(self, item_id):
+    def delete_cart_items(self, customer_id, item_id):
         pass

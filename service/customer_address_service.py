@@ -17,23 +17,23 @@ class CustomerAddressService:
             raise CustomerAddressNotFound()
         return addresses
 
-    def get_address_by_id(self, address_id):
-        address = self.repo.get_address_by_id(address_id)
+    def get_address_by_id(self, customer_id, address_id):
+        address = self.repo.get_address_by_id(customer_id, address_id)
         if not address:
             raise CustomerAddressNotFound()
         return address
 
-    def update_address(self, address_id, request):
+    def update_address(self, customer_id, address_id, request):
         try:
-            self.get_address_by_id(address_id)
-            updated_address = self.repo.update_address(address_id, request)
+            self.get_address_by_id(customer_id, address_id)
+            updated_address = self.repo.update_address(customer_id, address_id, request)
             return updated_address
         except CustomerAddressNotFound:
             raise CustomerAddressNotFound()
 
-    def delete_address(self, address_id):
+    def delete_address(self, customer_id, address_id):
         try:
-            self.get_address_by_id(address_id)
-            self.repo.delete_address(address_id)
+            self.get_address_by_id(customer_id, address_id)
+            self.repo.delete_address(customer_id, address_id)
         except CustomerAddressNotFound:
             raise CustomerAddressNotFound()

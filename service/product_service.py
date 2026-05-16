@@ -16,8 +16,8 @@ class ProductService:
             raise ProductNotFound()
         return products
 
-    def get_product_by_id(self, product_id):
-        product = self.repo.get_product_by_id(product_id)
+    def get_product_by_id(self, vendor_id, product_id):
+        product = self.repo.get_product_by_id(vendor_id, product_id)
         if not product:
             raise ProductNotFound()
         return product
@@ -28,19 +28,19 @@ class ProductService:
             raise ProductNotFound()
         return products
 
-    def update_product(self, product_id, request):
+    def update_product(self, vendor_id, product_id, request):
         try:
-            self.get_product_by_id(product_id)
-            updated_product = self.repo.update_product(product_id, request)
+            self.get_product_by_id(vendor_id, product_id)
+            updated_product = self.repo.update_product(vendor_id, product_id, request)
             return updated_product
 
         except ProductNotFound:
             raise ProductNotFound()
 
-    def delete_product(self, product_id):
+    def delete_product(self, vendor_id, product_id):
         try:
-            self.get_product_by_id(product_id)
-            self.repo.delete_product(product_id)
+            self.get_product_by_id(vendor_id, product_id)
+            self.repo.delete_product(vendor_id, product_id)
 
         except ProductNotFound:
             raise ProductNotFound()

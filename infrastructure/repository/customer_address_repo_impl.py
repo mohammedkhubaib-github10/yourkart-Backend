@@ -21,20 +21,23 @@ class CustomerAddressRepoImpl(CustomerAddressRepo):
         addresses = self.db.query(model.CustomerAddress).filter(model.CustomerAddress.customer_id == customer_id).all()
         return addresses
 
-    def get_address_by_id(self, address_id):
-        address = self.db.query(model.CustomerAddress).filter(model.CustomerAddress.address_id == address_id).first()
+    def get_address_by_id(self, customer_id, address_id):
+        address = self.db.query(model.CustomerAddress).filter(model.CustomerAddress.address_id == address_id,
+                                                              model.CustomerAddress.customer_id == customer_id).first()
         return address
 
-    def update_address(self, address_id, request):
-        address_query = self.db.query(model.CustomerAddress).filter(model.CustomerAddress.address_id == address_id)
+    def update_address(self, customer_id, address_id, request):
+        address_query = self.db.query(model.CustomerAddress).filter(model.CustomerAddress.address_id == address_id,
+                                                                    model.CustomerAddress.customer_id == customer_id)
         address = address_query.first()
         address_query.update(request.model_dump())
         self.db.commit()
         self.db.refresh(address)
         return address
 
-    def delete_address(self, address_id):
-        address_query = self.db.query(model.CustomerAddress).filter(model.CustomerAddress.address_id == address_id)
+    def delete_address(self, customer_id, address_id):
+        address_query = self.db.query(model.CustomerAddress).filter(model.CustomerAddress.address_id == address_id,
+                                                                    model.CustomerAddress.customer_id == customer_id)
         address = address_query.first()
         self.db.delete(address)
         self.db.commit()

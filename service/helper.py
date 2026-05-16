@@ -1,12 +1,6 @@
 from datetime import datetime, timedelta
 from math import radians, sin, cos, sqrt, asin
 
-from sqlalchemy.orm import Session
-
-from infrastructure import model
-
-
-
 
 def haversine(lat1, lon1, lat2, lon2):
     lat1 = float(lat1)

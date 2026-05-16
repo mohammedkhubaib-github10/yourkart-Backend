@@ -35,5 +35,5 @@ class CartService:
         cart_items = self.repo.view_cart_items(cart.cart_id)
         return cart_items
 
-    def delete_cart_items(self, item_id):
-        self.repo.delete_cart_items(item_id)
+    def delete_cart_items(self, customer_id, item_id):
+        self.repo.delete_cart_items(customer_id, item_id)

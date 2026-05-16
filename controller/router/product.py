@@ -1,21 +1,28 @@
 from fastapi import Depends, HTTPException, APIRouter
 
 from controller import schema
+from controller.dependency.auth_dependency import get_current_user
 from controller.dependency.product_dependency import get_product_service
 from domain.exception import ProductNotFound
 
 router = APIRouter()
 
 
-@router.post('/add_product/{vendor_id}')
-def add_product(vendor_id: str, request: schema.Product, service=Depends(get_product_service)):
+@router.post('/add_product')
+def add_product(request: schema.Product, service=Depends(get_product_service), user=Depends(get_current_user)):
+    if user["role"] != "vendor":
+        raise HTTPException(403)
+    vendor_id = user['user_id']
     product = service.add_product(request, vendor_id)
     return product
 
 
-@router.get('/get_products/{vendor_id}')
-def get_products(vendor_id: str, service=Depends(get_product_service)):
+@router.get('/get_products')
+def get_products(user=Depends(get_current_user), service=Depends(get_product_service)):
     try:
+        if user["role"] != "vendor":
+            raise HTTPException(403)
+        vendor_id = user['user_id']
         products = service.get_products(vendor_id)
         return products
 
@@ -55,18 +62,25 @@ def get_all_products(service=Depends(get_product_service)):
 
 
 @router.put('/update_product/{product_id}')
-def update_product(product_id: str, request: schema.Product, service=Depends(get_product_service)):
+def update_product(product_id: str, request: schema.Product, service=Depends(get_product_service),
+                   user=Depends(get_current_user)):
     try:
-        updated_product = service.update_product(product_id, request)
+        if user["role"] != "vendor":
+            raise HTTPException(403)
+        vendor_id = user['user_id']
+        updated_product = service.update_product(vendor_id, product_id, request)
         return updated_product
     except ProductNotFound as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.delete('/delete_product/{product_id}')
-def delete_product(product_id: str, service=Depends(get_product_service)):
+def delete_product(product_id: str, service=Depends(get_product_service), user=Depends(get_current_user)):
     try:
-        service.delete_product(product_id)
+        if user["role"] != "vendor":
+            raise HTTPException(403)
+        vendor_id = user['user_id']
+        service.delete_product(vendor_id, product_id)
         return "Deleted Successfully"
     except ProductNotFound as e:
         raise HTTPException(status_code=404, detail=str(e))

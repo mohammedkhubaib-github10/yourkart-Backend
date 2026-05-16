@@ -24,10 +24,10 @@ class CustomerService:
 
         try:
             customer = self.get_customer_by_contact(contact)
-            return customer
+            return customer.customer_id
         except CustomerNotFound:
             customer = self.repo.create_customer(contact)
-            return customer
+            return customer.customer_id
 
     def get_customer_by_id(self, customer_id):
         customer = self.repo.get_customer_by_id(customer_id)

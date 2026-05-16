@@ -24,20 +24,23 @@ class ProductRepoImpl(ProductRepo):
         products = self.db.query(model.Product).all()
         return products
 
-    def get_product_by_id(self, product_id):
-        product = self.db.query(model.Product).filter(model.Product.product_id == product_id).first()
+    def get_product_by_id(self, vendor_id, product_id):
+        product = self.db.query(model.Product).filter(model.Product.product_id == product_id,
+                                                      model.Product.vendor_id == vendor_id).first()
         return product
 
-    def update_product(self, product_id, request):
-        product_query = self.db.query(model.Product).filter(model.Product.product_id == product_id)
+    def update_product(self, vendor_id, product_id, request):
+        product_query = self.db.query(model.Product).filter(model.Product.product_id == product_id,
+                                                            model.Product.vendor_id == vendor_id)
         product = product_query.first()
         product_query.update(request.model_dump())
         self.db.commit()
         self.db.refresh(product)
         return product
 
-    def delete_product(self, product_id):
-        product_query = self.db.query(model.Product).filter(model.Product.product_id == product_id)
+    def delete_product(self, vendor_id, product_id):
+        product_query = self.db.query(model.Product).filter(model.Product.product_id == product_id,
+                                                            model.Vendor.vendor_id)
         product = product_query.first()
         self.db.delete(product)
         self.db.commit()

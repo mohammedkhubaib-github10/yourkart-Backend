@@ -5,3 +5,4 @@ from .customer_address_service import CustomerAddressService
 from .vendor_address_service import VendorAddressService
 from .cart_service import CartService
 from .order_service import OrderService
+from .auth_service import create_access_token
