@@ -1,5 +1,6 @@
 from domain.repository import CartRepo
 from infrastructure import model
+from domain.exception import CartItemsOfDifferentVendor, ProductNotFound, CartItemsNotFound, CartNotFound
 
 
 class CartRepoImpl(CartRepo):
@@ -20,16 +21,43 @@ class CartRepoImpl(CartRepo):
 
     def add_items_to_cart(self, cart_id, product_id):
 
-        product = self.db.query(model.Product).filter(
-            model.Product.product_id == product_id
-        ).first()
+        product = (
+            self.db.query(model.Product)
+            .filter(model.Product.product_id == product_id)
+            .first()
+        )
 
-        item = self.db.query(model.CartItem).filter(
-            model.CartItem.cart_id == cart_id,
-            model.CartItem.product_id == product_id
-        ).first()
+        if not product:
+            raise ProductNotFound()
 
+        # Check existing vendor in cart
+        existing_vendor = (
+            self.db.query(model.Product.vendor_id)
+            .join(
+                model.CartItem,
+                model.CartItem.product_id == model.Product.product_id
+            )
+            .filter(model.CartItem.cart_id == cart_id)
+            .first()
+        )
+
+        # Prevent multiple vendors in same cart
+        if existing_vendor and existing_vendor[0] != product.vendor_id:
+            raise CartItemsOfDifferentVendor()
+
+        # Check if item already exists in cart
+        item = (
+            self.db.query(model.CartItem)
+            .filter(
+                model.CartItem.cart_id == cart_id,
+                model.CartItem.product_id == product_id
+            )
+            .first()
+        )
+
+        # Add new item
         if not item:
+
             item = model.CartItem(
                 cart_id=cart_id,
                 product_id=product_id,
@@ -39,14 +67,20 @@ class CartRepoImpl(CartRepo):
 
             self.db.add(item)
 
+        # Increase quantity
         else:
+
             item.qty += 1
             item.total_price = item.qty * product.price
 
         self.db.commit()
         self.db.refresh(item)
 
-        self.update_cart_amount(cart_id, product.price, True)
+        self.update_cart_amount(
+            cart_id,
+            product.price,
+            True
+        )
 
         return item
 
@@ -74,13 +108,13 @@ class CartRepoImpl(CartRepo):
 
     def delete_cart_items(self, customer_id, item_id):
         item = self.db.query(model.CartItem).filter(model.CartItem.item_id == item_id).first()
+        if not item:
+            raise CartItemsNotFound()
         cart_id = item.cart_id
         c_id = self.db.query(model.Cart).filter(model.Cart.customer_id == customer_id,
                                                 model.Cart.cart_id == cart_id).first()
         if not c_id:
-            return
-        if not item:
-            return
+            raise CartNotFound()
         product_price = item.total_price / item.qty
         cart_id = item.cart_id
         if item.qty > 1:

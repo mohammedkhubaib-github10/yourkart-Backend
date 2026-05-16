@@ -10,6 +10,7 @@ from .vendor_exception import VendorNotFound
 from .cart_exception import CartAlreadyExists
 from .cart_exception import CartNotFound
 from .cart_exception import CartItemsNotFound
+from .cart_exception import CartItemsOfDifferentVendor
 from .order_exception import OrderAlreadyExists
 from .order_exception import OrderNotFound
 from .payment_exception import PaymentFailure
