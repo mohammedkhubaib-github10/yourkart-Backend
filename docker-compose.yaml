@@ -12,7 +12,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   yourkart-backend:
-    build: .
+    image: khubaib102004/yourkart
     container_name: backend-container
 
     ports:
