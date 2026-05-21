@@ -7,6 +7,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: backend
+      MYSQL_ROOT_HOST: "%"
 
     volumes:
       - mysql_data:/var/lib/mysql
